@@ -1,10 +1,6 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  experimental: {
-    // Give server actions and route handlers up to 30s (Vercel Hobby max)
-    serverActionsBodySizeLimit: "2mb",
-  },
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "**.tiktokcdn.com" },
