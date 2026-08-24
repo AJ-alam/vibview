@@ -2,7 +2,7 @@
 // All vars are optional at dev time so the app boots without cloud deps.
 
 function get(key: string): string {
-  return process.env[key] ?? "";
+  return (process.env[key] ?? "").trim();
 }
 
 export const env = {
