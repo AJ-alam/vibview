@@ -55,9 +55,11 @@ export const tiktok = {
   async getUserPosts(username: string, cursor = "0"): Promise<PostPage> {
     const cacheKey = `${username}:${cursor}`;
     const cached = await cacheGet<PostPage>("posts", cacheKey);
-    if (cached) return cached;
+    // Don't serve a cached empty page — always retry if last result was empty
+    if (cached && cached.posts.length > 0) return cached;
     const result = await tryChain("getUserPosts", username, (p) => p.getUserPosts(username, cursor));
-    await cacheSet("posts", result, cacheKey);
+    // Only cache non-empty results
+    if (result.posts.length > 0) await cacheSet("posts", result, cacheKey);
     return result;
   },
 

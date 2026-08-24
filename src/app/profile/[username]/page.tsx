@@ -33,10 +33,9 @@ export default async function ProfilePage(
 
   let user, initialPage;
   try {
-    [user, initialPage] = await Promise.all([
-      tiktok.getUser(username),
-      tiktok.getUserPosts(username, "0"),
-    ]);
+    // Sequential — avoids hitting tikwm's 1 req/sec rate limit simultaneously
+    user = await tiktok.getUser(username);
+    initialPage = await tiktok.getUserPosts(username, "0");
   } catch {
     return (
       <div className="container mx-auto max-w-xl px-4 py-24 text-center space-y-4">

@@ -164,6 +164,13 @@ export function VideoGrid({
   return (
     <div className="space-y-4">
       <h2 className="text-lg font-semibold">Videos</h2>
+
+      {posts.length === 0 && !loading && (
+        <p className="text-sm text-muted-foreground py-8 text-center">
+          No videos found — this account may be private or videos are unavailable right now.
+        </p>
+      )}
+
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
         {posts.map((post) => (
           <VideoTile key={post.id} post={post} />
