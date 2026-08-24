@@ -19,6 +19,10 @@ function parseInput(raw: string): { type: "profile" | "video"; target: string } 
   const shortMatch = trimmed.match(/tiktok\.com\/t\/([A-Za-z0-9]+)/i);
   if (shortMatch) return { type: "video", target: shortMatch[0] };
 
+  // Full TikTok profile URL — tiktok.com/@username
+  const profileUrlMatch = trimmed.match(/tiktok\.com\/@([\w.]+)/i);
+  if (profileUrlMatch) return { type: "profile", target: profileUrlMatch[1] };
+
   // @username (with or without leading @)
   const userMatch = trimmed.match(/^@?([\w.]+)$/);
   if (userMatch) return { type: "profile", target: userMatch[1] };

@@ -15,7 +15,17 @@ export async function GET(
     });
   }
 
-  const { username } = await params;
+  let { username } = await params;
+
+  // Strip full TikTok profile URLs down to just the username
+  const urlMatch = username.match(/tiktok\.com\/@([\w.]+)/i);
+  if (urlMatch) username = urlMatch[1];
+
+  // Reject obviously invalid usernames early
+  if (!username || !/^[\w.]{1,64}$/.test(username)) {
+    return NextResponse.json({ error: "Invalid username" }, { status: 400 });
+  }
+
   try {
     const user = await tiktok.getUser(username);
     return NextResponse.json(user);
