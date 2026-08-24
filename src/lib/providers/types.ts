@@ -151,14 +151,22 @@ const TikwmVideoItemSchema = z.object({
     .optional(),
 });
 
+// tikwm returns hasMore (camelCase) in their API responses; older docs show
+// has_more — accept both so the schema doesn't silently drop real video pages.
+const boolish = z.union([z.boolean(), z.number()]).transform(Boolean);
 export const TikwmUserPostsResponseSchema = z.object({
   code: z.number(),
   msg: z.string(),
   data: z.object({
     videos: z.array(TikwmVideoItemSchema),
     cursor: z.union([z.string(), z.number()]).transform(String),
-    has_more: z.union([z.boolean(), z.number()]).transform(Boolean),
-  }),
+    has_more: boolish.optional(),
+    hasMore: boolish.optional(),
+  }).transform((d) => ({
+    videos: d.videos,
+    cursor: d.cursor,
+    has_more: d.has_more ?? d.hasMore ?? false,
+  })),
 });
 
 export const TikwmVideoDetailResponseSchema = z.object({
