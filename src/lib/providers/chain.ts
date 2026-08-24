@@ -14,6 +14,16 @@ function logError(method: string, provider: string, target: string, err: unknown
   console.warn(JSON.stringify({ level: "warn", provider, method, target, error: String(err), ts: new Date().toISOString() }));
 }
 
+function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise<T> {
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error(`${label} timed out after ${ms}ms`)), ms);
+    promise.then(
+      (v) => { clearTimeout(timer); resolve(v); },
+      (e) => { clearTimeout(timer); reject(e); }
+    );
+  });
+}
+
 async function tryChain<T>(
   method: keyof TikTokProvider,
   target: string,
@@ -22,7 +32,7 @@ async function tryChain<T>(
   const errors: string[] = [];
   for (const p of providers) {
     try {
-      const result = await fn(p);
+      const result = await withTimeout(fn(p), 12_000, `${p.name}.${method as string}`);
       log(method as string, p.name, target);
       return result;
     } catch (err) {

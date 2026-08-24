@@ -49,9 +49,19 @@ function buildUrl(path: string, params: Record<string, string> = {}): string {
 
 async function tikwmFetch(url: string): Promise<unknown> {
   await acquireTikwmSlot();
-  const res = await fetch(url, { headers: buildHeaders(), cache: "no-store" });
-  if (!res.ok) throw new Error(`tikwm HTTP ${res.status} for ${url}`);
-  return res.json();
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 10_000);
+  try {
+    const res = await fetch(url, {
+      headers: buildHeaders(),
+      cache: "no-store",
+      signal: controller.signal,
+    });
+    if (!res.ok) throw new Error(`tikwm HTTP ${res.status} for ${url}`);
+    return res.json();
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 export const tikwmProvider: TikTokProvider = {

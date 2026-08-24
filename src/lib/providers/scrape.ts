@@ -48,12 +48,19 @@ async function fetchHtml(username: string): Promise<string> {
   if (env.TIKTOK_SESSION_ID) {
     headers["Cookie"] = `sessionid=${env.TIKTOK_SESSION_ID}`;
   }
-  const res = await fetch(`https://www.tiktok.com/@${encodeURIComponent(username)}`, {
-    headers,
-    cache: "no-store",
-  });
-  if (!res.ok) throw new Error(`TikTok scrape HTTP ${res.status}`);
-  return res.text();
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 10_000);
+  try {
+    const res = await fetch(`https://www.tiktok.com/@${encodeURIComponent(username)}`, {
+      headers,
+      cache: "no-store",
+      signal: controller.signal,
+    });
+    if (!res.ok) throw new Error(`TikTok scrape HTTP ${res.status}`);
+    return res.text();
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 function extractRehydration(html: string): unknown {
