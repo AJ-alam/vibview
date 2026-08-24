@@ -42,18 +42,19 @@ export async function GET(
     const rehydration = JSON.parse(match[1]) as Record<string, unknown>;
     const scope = (rehydration["__DEFAULT_SCOPE__"] ?? {}) as Record<string, unknown>;
 
-    // Return scope keys and a peek at each value's shape
-    const keyInfo: Record<string, unknown> = {};
-    for (const key of Object.keys(scope)) {
-      const val = scope[key] as Record<string, unknown>;
-      if (typeof val === "object" && val !== null) {
-        keyInfo[key] = Object.keys(val);
-      } else {
-        keyInfo[key] = typeof val;
-      }
-    }
+    const seoAbtest = scope["seo.abtest"] as Record<string, unknown> | undefined;
+    const vidList = seoAbtest?.["vidList"];
+    const userDetail = scope["webapp.user-detail"] as Record<string, unknown> | undefined;
 
-    return NextResponse.json({ httpStatus: res.status, scopeKeys: keyInfo });
+    // Return first 2 vidList items so we can see their structure
+    const sample = Array.isArray(vidList) ? vidList.slice(0, 2) : vidList;
+
+    return NextResponse.json({
+      httpStatus: res.status,
+      vidListLength: Array.isArray(vidList) ? vidList.length : null,
+      vidListSample: sample,
+      userDetailKeys: userDetail ? Object.keys(userDetail) : [],
+    });
   } catch (e) {
     return NextResponse.json({ error: String(e) }, { status: 500 });
   }
