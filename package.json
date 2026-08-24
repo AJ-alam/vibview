@@ -6,21 +6,48 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "worker:dev": "wrangler dev --config workers/proxy/wrangler.toml",
+    "worker:deploy": "wrangler deploy --config workers/proxy/wrangler.toml",
+    "worker:secret": "wrangler secret put PROXY_HMAC_SECRET --config workers/proxy/wrangler.toml"
   },
   "dependencies": {
+    "@base-ui/react": "^1.7.0",
+    "@supabase/supabase-js": "^2.112.3",
+    "@tobyg74/tiktok-api-dl": "^1.3.7",
+    "@types/hls.js": "^0.13.3",
+    "@upstash/ratelimit": "^2.0.8",
+    "@upstash/redis": "^1.38.2",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "hls.js": "^1.7.1",
+    "jszip": "^3.10.1",
+    "lucide-react": "^1.33.0",
     "next": "16.3.2",
+    "next-themes": "^0.4.6",
     "react": "19.2.8",
-    "react-dom": "19.2.8"
+    "react-dom": "19.2.8",
+    "resend": "^6.22.0",
+    "shadcn": "^4.19.0",
+    "tailwind-merge": "^3.6.0",
+    "tw-animate-css": "^1.4.0",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@vitest/coverage-v8": "^4.1.11",
     "eslint": "^9",
     "eslint-config-next": "16.3.2",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "tsx": "^4.23.12",
+    "typescript": "^5",
+    "vitest": "^4.1.11",
+    "wrangler": "^4.125.0"
   }
 }

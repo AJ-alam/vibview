@@ -1,0 +1,19 @@
+{
+  "userInfo": {
+    "user": {
+      "uid": "12345678",
+      "uniqueId": "testuser",
+      "nickname": "Test User",
+      "avatarLarger": "https://p16-sign.tiktokcdn-us.com/tos-useast5-avt-0068-tx/avatar.webp",
+      "signature": "This is a test bio",
+      "verified": false,
+      "region": "US"
+    },
+    "stats": {
+      "followerCount": 10000,
+      "followingCount": 500,
+      "heartCount": 500000,
+      "videoCount": 120
+    }
+  }
+}

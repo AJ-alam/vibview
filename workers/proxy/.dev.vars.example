@@ -1,0 +1,2 @@
+# Copy this to .dev.vars (not committed) for local worker testing
+PROXY_HMAC_SECRET=same-value-as-your-nextjs-env-local

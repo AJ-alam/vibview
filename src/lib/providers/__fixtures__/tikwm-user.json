@@ -1,0 +1,25 @@
+{
+  "code": 0,
+  "msg": "success",
+  "data": {
+    "user": {
+      "uid": "12345678",
+      "unique_id": "testuser",
+      "nickname": "Test User",
+      "avatar": "https://p16-sign.tiktokcdn-us.com/tos-useast5-avt-0068-tx/avatar.webp",
+      "signature": "This is a test bio",
+      "verified": false,
+      "region": "US",
+      "follower_count": 10000,
+      "following_count": 500,
+      "total_favorited": "500000",
+      "video_count": 120
+    },
+    "stats": {
+      "followerCount": 10000,
+      "followingCount": 500,
+      "heartCount": 500000,
+      "videoCount": 120
+    }
+  }
+}

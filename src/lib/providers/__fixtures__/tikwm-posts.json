@@ -1,0 +1,59 @@
+{
+  "code": 0,
+  "msg": "success",
+  "data": {
+    "videos": [
+      {
+        "video_id": "7123456789012345678",
+        "id": "7123456789012345678",
+        "title": "Check out this cool video #viral #fyp",
+        "cover": "https://p16-sign.tiktokcdn-us.com/tos-useast5-p-0068-tx/cover.jpeg",
+        "duration": 30,
+        "play_count": 1500000,
+        "digg_count": 80000,
+        "comment_count": 3200,
+        "share_count": 15000,
+        "create_time": 1710000000,
+        "play": "https://tikwm.com/video/media/play.mp4",
+        "wmplay": "https://tikwm.com/video/media/wmplay.mp4",
+        "hdplay": "https://tikwm.com/video/media/hdplay.mp4",
+        "music_info": {
+          "id": "987654321",
+          "title": "Original Sound",
+          "author": "testuser",
+          "play": "https://tikwm.com/video/music/play.mp3"
+        },
+        "author": {
+          "id": "12345678",
+          "unique_id": "testuser",
+          "nickname": "Test User"
+        }
+      },
+      {
+        "video_id": "7223456789012345678",
+        "id": "7223456789012345678",
+        "title": "Another video with images",
+        "cover": "https://p16-sign.tiktokcdn-us.com/tos-useast5-p-0068-tx/cover2.jpeg",
+        "duration": 0,
+        "play_count": 500000,
+        "digg_count": 20000,
+        "comment_count": 800,
+        "share_count": 3000,
+        "create_time": 1709000000,
+        "play": "",
+        "wmplay": "",
+        "images": [
+          "https://p16-sign.tiktokcdn-us.com/img1.webp",
+          "https://p16-sign.tiktokcdn-us.com/img2.webp"
+        ],
+        "author": {
+          "id": "12345678",
+          "unique_id": "testuser",
+          "nickname": "Test User"
+        }
+      }
+    ],
+    "cursor": "30",
+    "has_more": 1
+  }
+}
