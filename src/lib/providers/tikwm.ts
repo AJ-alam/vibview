@@ -34,16 +34,13 @@ function buildHeaders(): HeadersInit {
 }
 
 function buildUrl(path: string, params: Record<string, string> = {}): string {
-  // If we have an API token, hit tikwm.com directly — the token bypasses
-  // Cloudflare entirely so no Worker or cf_clearance is needed.
-  // Only route through the CF Worker when we have no token (cookie-based auth).
-  const useProxy = env.PROXY_BASE_URL && !env.TIKWM_API_TOKEN;
-  const base = useProxy
+  // Always route through the CF Worker when available — Worker injects the
+  // API token and bypasses tikwm.com's Cloudflare bot protection CF-to-CF.
+  const base = env.PROXY_BASE_URL
     ? `${env.PROXY_BASE_URL.replace(/\/$/, "")}/tikwm${path}`
     : `${BASE}${path}`;
   const url = new URL(base);
   for (const [k, v] of Object.entries(params)) url.searchParams.set(k, v);
-  if (env.TIKWM_API_TOKEN) url.searchParams.set("token", env.TIKWM_API_TOKEN);
   return url.toString();
 }
 
