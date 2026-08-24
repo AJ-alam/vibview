@@ -10,7 +10,7 @@ export function ProfileHeader({ user }: { user: UserProfile }) {
     <div className="flex flex-col sm:flex-row gap-6 items-start">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
-        src={user.avatarUrl}
+        src={user.avatarUrl ? `/api/img?url=${encodeURIComponent(user.avatarUrl)}` : ""}
         alt={user.displayName}
         width={96}
         height={96}

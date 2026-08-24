@@ -37,7 +37,7 @@ function VideoTile({ post }: { post: Post }) {
       <Link href={`/video/${post.id}`} className="absolute inset-0 block">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src={post.coverUrl}
+          src={post.coverUrl ? `/api/img?url=${encodeURIComponent(post.coverUrl)}` : ""}
           alt={post.caption}
           className="w-full h-full object-cover"
           loading="lazy"
