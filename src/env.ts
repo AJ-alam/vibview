@@ -17,4 +17,5 @@ export const env = {
   SUPABASE_ANON_KEY: get("SUPABASE_ANON_KEY"),
   RESEND_API_KEY: get("RESEND_API_KEY"),
   SNAPSHOT_SECRET: get("SNAPSHOT_SECRET"),
+  TIKHUB_API_KEY: get("TIKHUB_API_KEY"),
 } as const;

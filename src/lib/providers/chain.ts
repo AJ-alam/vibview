@@ -3,8 +3,11 @@ import type { TikTokProvider, UserProfile, PostPage, VideoDetail, Story, LiveRoo
 import { tikwmProvider } from "./tikwm";
 import { tobyg74Provider } from "./tobyg74";
 import { scrapeProvider } from "./scrape";
+import { tikhubProvider } from "./tikhub";
 
-const providers: TikTokProvider[] = [tikwmProvider, tobyg74Provider, scrapeProvider];
+// tikhub first — it works from datacenter IPs (own proxy infrastructure).
+// tikwm and tobyg74 are blocked by Cloudflare/TikTok from Vercel IPs.
+const providers: TikTokProvider[] = [tikhubProvider, tikwmProvider, tobyg74Provider, scrapeProvider];
 
 function log(method: string, provider: string, username: string) {
   console.log(JSON.stringify({ level: "info", provider, method, target: username, ts: new Date().toISOString() }));
