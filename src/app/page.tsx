@@ -17,9 +17,9 @@ export default function HomePage() {
       {/* Hero search */}
       <section className="text-center space-y-6">
         <h1 className="text-4xl sm:text-5xl font-bold tracking-tight">
-          Anonymous TikTok{" "}
+          Free TikTok Story{" "}
           <span className="bg-gradient-to-r from-purple-500 to-blue-400 bg-clip-text text-transparent">
-            Viewer & Downloader
+            Viewer and Downloader
           </span>
         </h1>
         <p className="text-muted-foreground text-lg max-w-xl mx-auto">
