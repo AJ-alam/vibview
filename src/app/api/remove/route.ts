@@ -28,7 +28,8 @@ export async function POST(req: NextRequest) {
   // Save to Supabase (best-effort)
   const db = getSupabase();
   if (db) {
-    await db.from("removal_requests").insert({ name, email, url, reason }).then(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await (db.from("removal_requests") as any).insert({ name, email, url, reason }).then(
       ({ error }) => { if (error) console.warn("Supabase removal insert", error.message); }
     );
   }

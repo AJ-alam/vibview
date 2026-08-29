@@ -27,7 +27,8 @@ export async function POST(req: NextRequest) {
   // Save to Supabase (best-effort)
   const db = getSupabase();
   if (db) {
-    await db.from("contact_submissions").insert({ name, email, message }).then(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await (db.from("contact_submissions") as any).insert({ name, email, message }).then(
       ({ error }) => { if (error) console.warn("Supabase contact insert", error.message); }
     );
   }
