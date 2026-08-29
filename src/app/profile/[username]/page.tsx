@@ -4,7 +4,7 @@ import { tiktok } from "@/lib/providers/chain";
 import { ProfileHeader } from "@/components/profile/ProfileHeader";
 import { AnalyticsPanel } from "@/components/profile/AnalyticsPanel";
 import { GrowthChart } from "@/components/profile/GrowthChart";
-import { VideoGrid } from "@/components/profile/VideoGrid";
+import { ProfileTabs } from "@/components/profile/ProfileTabs";
 
 export async function generateMetadata(
   props: PageProps<"/profile/[username]">
@@ -59,7 +59,7 @@ export default async function ProfilePage(
       <ProfileHeader user={user} />
       <AnalyticsPanel posts={initialPage.posts} user={user} />
       <GrowthChart username={username} />
-      <VideoGrid username={username} initialPage={initialPage} />
+      <ProfileTabs username={username} initialPage={initialPage} user={user} />
     </div>
   );
 }

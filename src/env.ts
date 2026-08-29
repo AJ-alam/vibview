@@ -18,4 +18,5 @@ export const env = {
   RESEND_API_KEY: get("RESEND_API_KEY"),
   SNAPSHOT_SECRET: get("SNAPSHOT_SECRET"),
   TIKHUB_API_KEY: get("TIKHUB_API_KEY"),
+  RAPIDAPI_KEY: get("RAPIDAPI_KEY"),
 } as const;

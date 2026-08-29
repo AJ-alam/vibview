@@ -3,8 +3,8 @@
 import type { VideoDetail } from "@/lib/providers/types";
 import { Download, Music, ImageIcon, Link } from "lucide-react";
 
-function dl(rawUrl: string, download = true) {
-  return `/api/dl?url=${encodeURIComponent(rawUrl)}&dl=${download ? 1 : 0}`;
+function dl(rawUrl: string, videoId: string, quality: string, download = true) {
+  return `/api/dl?url=${encodeURIComponent(rawUrl)}&dl=${download ? 1 : 0}&id=${encodeURIComponent(videoId)}&q=${quality}`;
 }
 
 const linkCls =
@@ -18,27 +18,27 @@ export function DownloadButtons({ video }: { video: VideoDetail }) {
       <h3 className="text-sm font-semibold">Downloads</h3>
       <div className="flex flex-wrap gap-2">
         {video.videoUrlHd && (
-          <a href={dl(video.videoUrlHd)} target="_blank" rel="noopener noreferrer" className={linkCls}>
+          <a href={dl(video.videoUrlHd, video.id, "hd")} target="_blank" rel="noopener noreferrer" className={linkCls}>
             <Download className="h-3.5 w-3.5" /> HD (no watermark)
           </a>
         )}
         {video.videoUrl && (
-          <a href={dl(video.videoUrl)} target="_blank" rel="noopener noreferrer" className={linkCls}>
+          <a href={dl(video.videoUrl, video.id, "sd")} target="_blank" rel="noopener noreferrer" className={linkCls}>
             <Download className="h-3.5 w-3.5" /> No watermark
           </a>
         )}
         {video.videoUrlWm && (
-          <a href={dl(video.videoUrlWm)} target="_blank" rel="noopener noreferrer" className={linkCls}>
+          <a href={dl(video.videoUrlWm, video.id, "wm")} target="_blank" rel="noopener noreferrer" className={linkCls}>
             <Download className="h-3.5 w-3.5" /> Watermarked
           </a>
         )}
         {video.coverUrl && (
-          <a href={dl(video.coverUrl)} target="_blank" rel="noopener noreferrer" className={linkCls}>
+          <a href={dl(video.coverUrl, video.id, "cover")} target="_blank" rel="noopener noreferrer" className={linkCls}>
             <ImageIcon className="h-3.5 w-3.5" /> Cover image
           </a>
         )}
         {video.music?.audioUrl && (
-          <a href={dl(video.music.audioUrl)} target="_blank" rel="noopener noreferrer" className={linkCls}>
+          <a href={dl(video.music.audioUrl, video.id, "audio")} target="_blank" rel="noopener noreferrer" className={linkCls}>
             <Music className="h-3.5 w-3.5" /> Audio (MP3)
           </a>
         )}

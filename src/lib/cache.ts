@@ -21,6 +21,7 @@ const TTL = {
   user: 24 * 60 * 60,   // 24 hours
   posts: 6 * 60 * 60,   // 6 hours
   video: 24 * 60 * 60,  // 24 hours
+  uid: 7 * 24 * 60 * 60, // 7 days — numeric user IDs are stable
 } as const;
 
 type CacheBucket = keyof typeof TTL;

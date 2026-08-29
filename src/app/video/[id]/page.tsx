@@ -3,7 +3,6 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Music } from "lucide-react";
 import { tiktok } from "@/lib/providers/chain";
-import { signProxyUrl } from "@/lib/sign-url";
 import { VideoPlayer } from "@/components/video/VideoPlayer";
 import { PhotoCarousel } from "@/components/video/PhotoCarousel";
 import { DownloadButtons } from "@/components/video/DownloadButtons";
@@ -35,7 +34,10 @@ export default async function VideoPage(props: PageProps<"/video/[id]">) {
   try {
     video = await tiktok.getVideo(id);
     const rawUrl = video.videoUrlHd ?? video.videoUrl;
-    videoSrc = rawUrl ? await signProxyUrl(rawUrl) : "";
+    const quality = video.videoUrlHd ? "hd" : "sd";
+    videoSrc = rawUrl
+      ? `/api/dl?url=${encodeURIComponent(rawUrl)}&dl=0&id=${encodeURIComponent(id)}&q=${quality}`
+      : "";
   } catch {
     notFound();
   }
