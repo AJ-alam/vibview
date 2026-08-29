@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "TikTok Story Viewer — Watch TikTok Stories Anonymously",
+    default: "Free TikTok Story Viewer and Downloader",
     template: "%s | TikTok Story Viewer",
   },
   description:

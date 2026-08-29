@@ -7,20 +7,20 @@ import {
 
 const FAQ = [
   {
-    q: "Is VibView free to use?",
-    a: "Yes, VibView is completely free. No subscription, no login, no hidden fees.",
+    q: "Is TikTok Story Viewer free to use?",
+    a: "Yes, TikTok Story Viewer is completely free. No subscription, no login, no hidden fees.",
   },
   {
-    q: "Do I need a TikTok account to use VibView?",
-    a: "No account is required. VibView only accesses public content that anyone can see on TikTok.",
+    q: "Do I need a TikTok account to use TikTok Story Viewer?",
+    a: "No account is required. TikTok Story Viewer only accesses public content that anyone can see on TikTok.",
   },
   {
     q: "Can I download videos without a watermark?",
-    a: "Yes. VibView fetches the original, watermark-free version of TikTok videos wherever possible.",
+    a: "Yes. TikTok Story Viewer fetches the original, watermark-free version of TikTok videos wherever possible.",
   },
   {
     q: "Will the TikTok creator know I viewed their profile or stories?",
-    a: "No. VibView does not interact with TikTok's servers as a logged-in user, so views are not recorded against any account.",
+    a: "No. TikTok Story Viewer does not interact with TikTok's servers as a logged-in user, so views are not recorded against any account.",
   },
   {
     q: "How accurate are the earnings estimates?",

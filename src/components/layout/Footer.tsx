@@ -5,7 +5,6 @@ import { Separator } from "@/components/ui/separator";
 const FOOTER_LINKS = [
   { href: "/page/about", label: "About" },
   { href: "/page/contact_us", label: "Contact Us" },
-  { href: "/page/remove", label: "Content Removal" },
   { href: "/page/privacy", label: "Privacy Policy" },
   { href: "/page/terms", label: "Terms of Service" },
 ];
@@ -36,10 +35,10 @@ export function Footer() {
         </div>
         <Separator className="my-4" />
         <p className="text-center text-xs text-muted-foreground">
-          VibView is not affiliated with TikTok or ByteDance. All trademarks belong to their respective owners.
+          TikTok Story Viewer is not affiliated with TikTok or ByteDance. All trademarks belong to their respective owners.
         </p>
         <p className="text-center text-xs text-muted-foreground mt-1">
-          © {new Date().getFullYear()} VibView. For personal use only.
+          © {new Date().getFullYear()} TikTok Story Viewer. For personal use only.
         </p>
       </div>
     </footer>

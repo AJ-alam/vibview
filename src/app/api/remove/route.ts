@@ -39,10 +39,10 @@ export async function POST(req: NextRequest) {
   if (apiKey) {
     const resend = new Resend(apiKey);
     const { error } = await resend.emails.send({
-      from: "VibView Removals <onboarding@resend.dev>",
+      from: "TikTok Story Viewer Removals <onboarding@resend.dev>",
       to: "ha0797685@gmail.com",
       replyTo: email,
-      subject: `[VibView DMCA/Removal] ${name}`,
+      subject: `[TikTok Story Viewer DMCA/Removal] ${name}`,
       text: `From: ${name} <${email}>\nContent URL: ${url}\n\nReason:\n${reason}`,
     });
     if (error) console.error("Resend removal error", error);

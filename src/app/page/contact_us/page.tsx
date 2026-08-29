@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { ContactForm } from "@/components/forms/ContactForm";
 
 export const metadata: Metadata = {
-  title: "Contact Us — VibView",
-  description: "Get in touch with the VibView team.",
+  title: "Contact Us — TikTok Story Viewer",
+  description: "Get in touch with the TikTok Story Viewer team.",
   alternates: { canonical: "/page/contact_us" },
 };
 

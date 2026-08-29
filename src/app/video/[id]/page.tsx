@@ -15,7 +15,7 @@ export async function generateMetadata(
   try {
     const video = await tiktok.getVideo(id);
     return {
-      title: `${video.caption.slice(0, 60) || "TikTok Video"} — Download HD | VibView`,
+      title: `${video.caption.slice(0, 60) || "TikTok Video"} — Download HD | TikTok Story Viewer`,
       description: `Download TikTok video by @${video.authorUsername} in HD without watermark. ${Intl.NumberFormat("en", { notation: "compact" }).format(video.views)} views.`,
       alternates: { canonical: `/video/${id}` },
     };

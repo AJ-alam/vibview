@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy — VibView",
-  description: "How VibView handles your data.",
+  title: "Privacy Policy — TikTok Story Viewer",
+  description: "How TikTok Story Viewer handles your data.",
   alternates: { canonical: "/page/privacy" },
 };
 
@@ -16,7 +16,7 @@ export default function PrivacyPage() {
 
       <h2>What we collect</h2>
       <p>
-        VibView does not require an account and does not collect personally
+        TikTok Story Viewer does not require an account and does not collect personally
         identifiable information. Your recent search history is stored only in
         your browser&apos;s localStorage and never sent to our servers.
       </p>
@@ -34,7 +34,7 @@ export default function PrivacyPage() {
 
       <h2>Third-party services</h2>
       <p>
-        VibView fetches content from TikTok&apos;s public infrastructure. Your
+        TikTok Story Viewer fetches content from TikTok&apos;s public infrastructure. Your
         browser may also receive assets from Cloudflare (CDN/proxy). Both have
         their own privacy policies.
       </p>

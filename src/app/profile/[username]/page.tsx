@@ -14,7 +14,7 @@ export async function generateMetadata(
     const user = await tiktok.getUser(username);
     const fmtFollowers = Intl.NumberFormat("en", { notation: "compact" }).format(user.followers);
     return {
-      title: `@${user.username} (${user.displayName}) — TikTok Profile | VibView`,
+      title: `@${user.username} (${user.displayName}) — TikTok Profile | TikTok Story Viewer`,
       description: `View ${user.displayName}'s TikTok anonymously. ${fmtFollowers} followers, ${user.videoCount} videos. Download HD videos without watermark.`,
       alternates: { canonical: `/@${username}` },
     };

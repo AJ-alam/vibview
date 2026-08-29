@@ -5,7 +5,7 @@ import { HistoryPanel } from "@/components/home/HistoryPanel";
 import { FaqSection } from "@/components/home/FaqSection";
 
 export const metadata: Metadata = {
-  title: "VibView — Anonymous TikTok Viewer & Downloader",
+  title: "TikTok Story Viewer — Free TikTok Story Viewer and Downloader",
   description:
     "Anonymously view TikTok profiles, download HD videos without watermark, watch stories, check analytics, and more — free, no login required.",
   alternates: { canonical: "/" },

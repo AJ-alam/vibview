@@ -38,10 +38,10 @@ export async function POST(req: NextRequest) {
   if (apiKey) {
     const resend = new Resend(apiKey);
     const { error } = await resend.emails.send({
-      from: "VibView Contact <onboarding@resend.dev>",
+      from: "TikTok Story Viewer Contact <onboarding@resend.dev>",
       to: "ha0797685@gmail.com",
       replyTo: email,
-      subject: `[VibView Contact] ${name}`,
+      subject: `[TikTok Story Viewer Contact] ${name}`,
       text: `From: ${name} <${email}>\n\n${message}`,
     });
     if (error) console.error("Resend contact error", error);

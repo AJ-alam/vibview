@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Terms of Service — VibView",
-  description: "VibView terms of service and acceptable use policy.",
+  title: "Terms of Service — TikTok Story Viewer",
+  description: "TikTok Story Viewer terms of service and acceptable use policy.",
   alternates: { canonical: "/page/terms" },
 };
 
@@ -16,19 +16,19 @@ export default function TermsPage() {
 
       <h2>Use of the service</h2>
       <p>
-        VibView provides access to publicly available TikTok content for
-        personal, non-commercial use only. By using VibView you agree not to:
+        TikTok Story Viewer provides access to publicly available TikTok content for
+        personal, non-commercial use only. By using TikTok Story Viewer you agree not to:
       </p>
       <ul>
         <li>Redistribute downloaded content commercially without the creator&apos;s permission.</li>
-        <li>Use VibView to harass, stalk, or target individuals.</li>
+        <li>Use TikTok Story Viewer to harass, stalk, or target individuals.</li>
         <li>Attempt to circumvent rate limits or access controls.</li>
-        <li>Scrape or automate requests to VibView at scale.</li>
+        <li>Scrape or automate requests to TikTok Story Viewer at scale.</li>
       </ul>
 
       <h2>Disclaimer</h2>
       <p>
-        VibView is provided &quot;as is&quot; without warranty of any kind.
+        TikTok Story Viewer is provided &quot;as is&quot; without warranty of any kind.
         Earnings and profile valuations are estimates only and carry no
         financial accuracy guarantee.
       </p>
@@ -36,7 +36,7 @@ export default function TermsPage() {
       <h2>Intellectual property</h2>
       <p>
         Videos and images remain the property of their respective creators.
-        VibView claims no ownership over any TikTok content accessed through
+        TikTok Story Viewer claims no ownership over any TikTok content accessed through
         this service.
       </p>
 
