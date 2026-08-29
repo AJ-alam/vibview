@@ -1,13 +1,10 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ThemeToggle } from "./ThemeToggle";
-import { MyListsDrawer } from "./MyListsDrawer";
 
 export function Header() {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto flex h-14 max-w-6xl items-center gap-4 px-4">
-        {/* Logo */}
         <Link href="/" className="flex items-center shrink-0">
           <Image
             src="/logo.png"
@@ -17,12 +14,6 @@ export function Header() {
             className="drop-shadow-[0_0_8px_rgba(139,92,246,0.5)]"
           />
         </Link>
-
-        {/* Right side */}
-        <div className="ml-auto flex items-center gap-1">
-          <MyListsDrawer />
-          <ThemeToggle />
-        </div>
       </div>
     </header>
   );
