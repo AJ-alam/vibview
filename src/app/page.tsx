@@ -17,10 +17,7 @@ export default function HomePage() {
       {/* Hero search */}
       <section className="text-center space-y-6">
         <h1 className="text-4xl sm:text-5xl font-bold tracking-tight">
-          Free TikTok Story{" "}
-          <span className="bg-gradient-to-r from-purple-500 to-blue-400 bg-clip-text text-transparent">
-            Viewer and Downloader
-          </span>
+          Free TikTok Story Viewer and Downloader
         </h1>
         <p className="text-muted-foreground text-lg max-w-xl mx-auto">
           Enter a @username or paste a TikTok video URL to get started — no
