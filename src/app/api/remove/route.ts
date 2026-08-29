@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
   if (db) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await (db.from("removal_requests") as any).insert({ name, email, url, reason }).then(
-      ({ error }) => { if (error) console.warn("Supabase removal insert", error.message); }
+      ({ error }: { error: { message: string } | null }) => { if (error) console.warn("Supabase removal insert", error.message); }
     );
   }
 

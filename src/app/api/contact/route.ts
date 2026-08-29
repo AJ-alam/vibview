@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
   if (db) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await (db.from("contact_submissions") as any).insert({ name, email, message }).then(
-      ({ error }) => { if (error) console.warn("Supabase contact insert", error.message); }
+      ({ error }: { error: { message: string } | null }) => { if (error) console.warn("Supabase contact insert", error.message); }
     );
   }
 
