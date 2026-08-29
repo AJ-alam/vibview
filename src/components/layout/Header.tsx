@@ -12,20 +12,14 @@ export function Header() {
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto flex h-14 max-w-6xl items-center gap-4 px-4">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2 shrink-0">
+        <Link href="/" className="flex items-center shrink-0">
           <Image
             src="/logo.png"
             alt="TikTok Story Viewer logo"
-            width={32}
-            height={32}
-            className="rounded-sm"
+            width={44}
+            height={44}
+            className="drop-shadow-[0_0_8px_rgba(139,92,246,0.5)]"
           />
-          <span className="font-bold text-base tracking-tight">
-            <span className="bg-gradient-to-r from-purple-500 to-blue-400 bg-clip-text text-transparent">
-              TikTok
-            </span>{" "}
-            <span className="text-white">Story Viewer</span>
-          </span>
         </Link>
 
         {/* Nav */}

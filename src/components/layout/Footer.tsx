@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Separator } from "@/components/ui/separator";
 
 const FOOTER_LINKS = [
@@ -14,9 +15,13 @@ export function Footer() {
     <footer className="border-t border-border mt-auto">
       <div className="container mx-auto max-w-6xl px-4 py-8">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-          <span className="font-bold text-lg tracking-tight">
-            Vib<span className="text-pink-500">View</span>
-          </span>
+          <Image
+            src="/logo.png"
+            alt="TikTok Story Viewer logo"
+            width={40}
+            height={40}
+            className="drop-shadow-[0_0_8px_rgba(139,92,246,0.5)]"
+          />
           <nav className="flex flex-wrap justify-center gap-x-4 gap-y-2">
             {FOOTER_LINKS.map((link) => (
               <Link
