@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
 import { z } from "zod";
+import { getSupabase } from "@/lib/supabase";
 
 const schema = z.object({
   name: z.string().min(1).max(100),
@@ -22,25 +23,27 @@ export async function POST(req: NextRequest) {
   }
 
   const { name, email, message } = parsed.data;
-  const apiKey = process.env.RESEND_API_KEY;
 
-  if (!apiKey) {
-    console.warn("RESEND_API_KEY not set — contact form submission dropped");
-    return NextResponse.json({ ok: true });
+  // Save to Supabase (best-effort)
+  const db = getSupabase();
+  if (db) {
+    await db.from("contact_submissions").insert({ name, email, message }).then(
+      ({ error }) => { if (error) console.warn("Supabase contact insert", error.message); }
+    );
   }
 
-  const resend = new Resend(apiKey);
-  const { error } = await resend.emails.send({
-    from: "VibView Contact <onboarding@resend.dev>",
-    to: "ha0797685@gmail.com",
-    replyTo: email,
-    subject: `[VibView Contact] ${name}`,
-    text: `From: ${name} <${email}>\n\n${message}`,
-  });
-
-  if (error) {
-    console.error("Resend contact error", error);
-    return NextResponse.json({ error: "Failed to send" }, { status: 500 });
+  // Send email (best-effort — never fail the request)
+  const apiKey = process.env.RESEND_API_KEY;
+  if (apiKey) {
+    const resend = new Resend(apiKey);
+    const { error } = await resend.emails.send({
+      from: "VibView Contact <onboarding@resend.dev>",
+      to: "ha0797685@gmail.com",
+      replyTo: email,
+      subject: `[VibView Contact] ${name}`,
+      text: `From: ${name} <${email}>\n\n${message}`,
+    });
+    if (error) console.error("Resend contact error", error);
   }
 
   return NextResponse.json({ ok: true });

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
 import { z } from "zod";
+import { getSupabase } from "@/lib/supabase";
 
 const schema = z.object({
   name: z.string().min(1).max(100),
@@ -23,25 +24,27 @@ export async function POST(req: NextRequest) {
   }
 
   const { name, email, url, reason } = parsed.data;
-  const apiKey = process.env.RESEND_API_KEY;
 
-  if (!apiKey) {
-    console.warn("RESEND_API_KEY not set — removal request dropped");
-    return NextResponse.json({ ok: true });
+  // Save to Supabase (best-effort)
+  const db = getSupabase();
+  if (db) {
+    await db.from("removal_requests").insert({ name, email, url, reason }).then(
+      ({ error }) => { if (error) console.warn("Supabase removal insert", error.message); }
+    );
   }
 
-  const resend = new Resend(apiKey);
-  const { error } = await resend.emails.send({
-    from: "VibView Removals <onboarding@resend.dev>",
-    to: "ha0797685@gmail.com",
-    replyTo: email,
-    subject: `[VibView DMCA/Removal] ${name}`,
-    text: `From: ${name} <${email}>\nContent URL: ${url}\n\nReason:\n${reason}`,
-  });
-
-  if (error) {
-    console.error("Resend removal error", error);
-    return NextResponse.json({ error: "Failed to send" }, { status: 500 });
+  // Send email (best-effort — never fail the request)
+  const apiKey = process.env.RESEND_API_KEY;
+  if (apiKey) {
+    const resend = new Resend(apiKey);
+    const { error } = await resend.emails.send({
+      from: "VibView Removals <onboarding@resend.dev>",
+      to: "ha0797685@gmail.com",
+      replyTo: email,
+      subject: `[VibView DMCA/Removal] ${name}`,
+      text: `From: ${name} <${email}>\nContent URL: ${url}\n\nReason:\n${reason}`,
+    });
+    if (error) console.error("Resend removal error", error);
   }
 
   return NextResponse.json({ ok: true });
