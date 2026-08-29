@@ -17,12 +17,17 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "VibView — Anonymous TikTok Viewer & Downloader",
-    template: "%s | VibView",
+    default: "TikTok Story Viewer — Watch TikTok Stories Anonymously",
+    template: "%s | TikTok Story Viewer",
   },
   description:
-    "View TikTok profiles, download videos without watermark, watch stories anonymously, and analyze engagement — all for free.",
+    "View TikTok stories, profiles, and download videos without watermark anonymously — all for free.",
   metadataBase: new URL("https://vibview.app"),
+  icons: {
+    icon: "/icon.png",
+    shortcut: "/icon.png",
+    apple: "/icon.png",
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
