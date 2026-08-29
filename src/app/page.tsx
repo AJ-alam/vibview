@@ -18,7 +18,9 @@ export default function HomePage() {
       <section className="text-center space-y-6">
         <h1 className="text-4xl sm:text-5xl font-bold tracking-tight">
           Anonymous TikTok{" "}
-          <span className="text-pink-500">Viewer & Downloader</span>
+          <span className="bg-gradient-to-r from-purple-500 to-blue-400 bg-clip-text text-transparent">
+            Viewer & Downloader
+          </span>
         </h1>
         <p className="text-muted-foreground text-lg max-w-xl mx-auto">
           Enter a @username or paste a TikTok video URL to get started — no

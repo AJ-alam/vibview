@@ -53,9 +53,9 @@ export function FeatureCards() {
       <h2 className="text-2xl font-bold text-center mb-8">What You Can Do</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {FEATURES.map((feat) => (
-          <Card key={feat.title} className="border-border hover:border-pink-500/40 transition-colors">
+          <Card key={feat.title} className="border-border hover:border-purple-500/40 transition-colors">
             <CardContent className="pt-6 space-y-2">
-              <feat.icon className="h-8 w-8 text-pink-500" />
+              <feat.icon className="h-8 w-8 text-purple-500" />
               <h3 className="font-semibold">{feat.title}</h3>
               <p className="text-sm text-muted-foreground">{feat.description}</p>
             </CardContent>
