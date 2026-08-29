@@ -4,10 +4,14 @@ import { tikwmProvider } from "./tikwm";
 import { tobyg74Provider } from "./tobyg74";
 import { scrapeProvider } from "./scrape";
 import { tikhubProvider } from "./tikhub";
+import { scraptikProvider } from "./scraptik";
 
-// tikhub first — it works from datacenter IPs (own proxy infrastructure).
-// tikwm and tobyg74 are blocked by Cloudflare/TikTok from Vercel IPs.
-const providers: TikTokProvider[] = [tikhubProvider, tikwmProvider, tobyg74Provider, scrapeProvider];
+// scraptik (RapidAPI) first for getUserPosts — works from datacenter IPs.
+// tikhub second for getUser profile lookups.
+// tikwm blocked by Cloudflare from Vercel IPs.
+// tobyg74 removed — reads a file at /ROOT/node_modules/... that doesn't exist
+// in Vercel's serverless environment, causing unhandled rejections + process crash.
+const providers: TikTokProvider[] = [scraptikProvider, tikhubProvider, tikwmProvider, scrapeProvider];
 
 function log(method: string, provider: string, username: string) {
   console.log(JSON.stringify({ level: "info", provider, method, target: username, ts: new Date().toISOString() }));
@@ -70,6 +74,14 @@ export const tiktok = {
     const cacheKey = urlOrId.replace(/[^a-z0-9]/gi, "_").slice(0, 64);
     const cached = await cacheGet<VideoDetail>("video", cacheKey);
     if (cached) return cached;
+    const result = await tryChain("getVideo", urlOrId, (p) => p.getVideo(urlOrId));
+    await cacheSet("video", result, cacheKey);
+    return result;
+  },
+
+  // Bypasses the Upstash cache — use when a cached CDN URL has expired.
+  async getVideoFresh(urlOrId: string): Promise<VideoDetail> {
+    const cacheKey = urlOrId.replace(/[^a-z0-9]/gi, "_").slice(0, 64);
     const result = await tryChain("getVideo", urlOrId, (p) => p.getVideo(urlOrId));
     await cacheSet("video", result, cacheKey);
     return result;
