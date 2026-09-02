@@ -4,6 +4,7 @@ import { tikwmProvider } from "./tikwm";
 import { scrapeProvider } from "./scrape";
 import { tikhubProvider } from "./tikhub";
 import { scraptikProvider } from "./scraptik";
+import { scraper7Provider } from "./scraper7";
 import { tiktokMobileProvider } from "./tiktok-mobile";
 
 // tobyg74 removed — reads a file at /ROOT/node_modules/... that doesn't exist
@@ -19,12 +20,14 @@ import { tiktokMobileProvider } from "./tiktok-mobile";
 const getUserProviders: TikTokProvider[] = [
   tikhubProvider,
   scraptikProvider,
+  scraper7Provider,
   tiktokMobileProvider,
   tikwmProvider,
   scrapeProvider,
 ];
 const getPostsProviders: TikTokProvider[] = [
   scraptikProvider,
+  scraper7Provider,
   tikhubProvider,
   tiktokMobileProvider,
   tikwmProvider,
