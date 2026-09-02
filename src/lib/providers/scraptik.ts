@@ -92,8 +92,24 @@ function itemToPost(v: Record<string, unknown>, username: string): Post {
 export const scraptikProvider: TikTokProvider = {
   name: "scraptik",
 
-  async getUser(_username): Promise<UserProfile> {
-    throw new Error("scraptik: getUser not implemented — use other providers");
+  async getUser(username): Promise<UserProfile> {
+    const json = await apiFetch(`/get-user?unique_id=${encodeURIComponent(username)}`);
+    const user = (json.user ?? json.data) as Record<string, unknown> | undefined;
+    if (!user || !user.uid) throw new Error(`Scraptik: no user data for ${username}`);
+    const avatarLarger = user.avatar_larger as Record<string, unknown> | undefined;
+    return {
+      uid: String(user.uid),
+      username: String(user.unique_id ?? username),
+      displayName: String(user.nickname ?? username),
+      avatarUrl: String((avatarLarger?.url_list as string[] | undefined)?.[0] ?? ""),
+      bio: String(user.signature ?? ""),
+      verified: Boolean(user.verified ?? false),
+      region: String(user.region ?? ""),
+      followers: Number(user.follower_count ?? 0),
+      following: Number(user.following_count ?? 0),
+      likes: Number(user.total_favorited ?? 0),
+      videoCount: Number(user.video_count ?? 0),
+    };
   },
 
   async getUserPosts(username, cursor = "0"): Promise<PostPage> {

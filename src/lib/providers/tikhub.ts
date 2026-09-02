@@ -8,7 +8,7 @@ async function tikhubFetch(path: string): Promise<Record<string, unknown>> {
   if (!key) throw new Error("TIKHUB_API_KEY not set");
 
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), 15_000);
+  const timer = setTimeout(() => controller.abort(), 16_000);
   try {
     const res = await fetch(`${BASE}${path}`, {
       headers: {
@@ -18,8 +18,19 @@ async function tikhubFetch(path: string): Promise<Record<string, unknown>> {
       cache: "no-store",
       signal: controller.signal,
     });
-    if (!res.ok) throw new Error(`TikHub HTTP ${res.status}`);
-    return res.json() as Promise<Record<string, unknown>>;
+    if (!res.ok) {
+      const body = await res.text().catch(() => "");
+      throw new Error(`TikHub HTTP ${res.status}: ${body.slice(0, 200)}`);
+    }
+    const json = await res.json() as Record<string, unknown>;
+    // TikHub wraps API errors inside HTTP 200 with a non-200 code field.
+    // Without this check, getUser silently returns an empty profile instead of
+    // throwing and letting the chain try the next provider.
+    const code = Number(json.code ?? 200);
+    if (code !== 200 && code !== 0) {
+      throw new Error(`TikHub API error ${code}: ${String(json.message ?? json.msg ?? "unknown")}`);
+    }
+    return json;
   } finally {
     clearTimeout(timer);
   }
@@ -72,12 +83,19 @@ export const tikhubProvider: TikTokProvider = {
     const json = await tikhubFetch(
       `/api/v1/tiktok/app/v3/fetch_user_profile_by_unique_id?uniqueId=${encodeURIComponent(username)}`
     );
-    const data = (json.data ?? json) as Record<string, unknown>;
+    const data = json.data as Record<string, unknown> | null | undefined;
+    if (!data) throw new Error(`TikHub: no data in response for user ${username}`);
+
     const userInfo = data.userInfo as Record<string, unknown> | undefined;
-    const user = (data.user ?? userInfo?.["user"] ?? data) as Record<string, unknown>;
+    const user = (data.user ?? userInfo?.["user"]) as Record<string, unknown> | undefined;
+    if (!user) throw new Error(`TikHub: no user object in response for ${username}`);
+
     const stats = (data.stats ?? userInfo?.["stats"] ?? {}) as Record<string, unknown>;
+    const uid = String(user.id ?? user.uid ?? "");
+    if (!uid) throw new Error(`TikHub: user object has no uid for ${username}`);
+
     return {
-      uid: String(user.id ?? user.uid ?? ""),
+      uid,
       username: String(user.uniqueId ?? username),
       displayName: String(user.nickname ?? username),
       avatarUrl: String(user.avatarLarger ?? user.avatarMedium ?? ""),
