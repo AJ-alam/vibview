@@ -26,6 +26,7 @@ const getUserProviders: TikTokProvider[] = [
 const getPostsProviders: TikTokProvider[] = [
   scraptikProvider,
   tikhubProvider,
+  tiktokMobileProvider,
   tikwmProvider,
   scrapeProvider,
 ];

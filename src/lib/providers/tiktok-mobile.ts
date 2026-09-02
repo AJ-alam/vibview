@@ -1,4 +1,5 @@
-import type { TikTokProvider, UserProfile, PostPage, VideoDetail, Story, LiveRoom } from "./types";
+import { cacheGet, cacheSet } from "@/lib/cache";
+import type { TikTokProvider, UserProfile, PostPage, Post, VideoDetail, Story, LiveRoom } from "./types";
 
 // TikTok's internal mobile API — no API key required.
 // Multiple domains tried in order; Vercel datacenter IPs are blocked by some but not all.
@@ -56,6 +57,70 @@ async function mobileFetch(path: string, params: Record<string, string>): Promis
   throw new Error(`TikTok mobile API: all domains failed — ${errors.join("; ")}`);
 }
 
+// Resolve username → numeric uid, cached 7 days (uids are stable identifiers).
+async function resolveUid(username: string): Promise<string> {
+  const cached = await cacheGet<string>("uid", `mob:${username}`);
+  if (cached) return cached;
+  const json = await mobileFetch("/aweme/v1/user/profile/other/", { uniqueId: username });
+  const code = Number(json.status_code ?? json.statusCode ?? -1);
+  if (code !== 0) throw new Error(`TikTok mobile: user lookup status ${code}`);
+  const user = json.user as Record<string, unknown> | undefined;
+  const uid = String(user?.uid ?? "");
+  if (!uid) throw new Error(`TikTok mobile: no uid for ${username}`);
+  await cacheSet("uid", uid, `mob:${username}`);
+  return uid;
+}
+
+function itemToPost(v: Record<string, unknown>, username: string): Post {
+  const vid = v.video as Record<string, unknown> | undefined;
+  const stats = (v.statistics ?? v.stats) as Record<string, unknown> | undefined;
+  const author = v.author as Record<string, unknown> | undefined;
+  const music = v.music as Record<string, unknown> | undefined;
+
+  const playUrls = (vid?.play_addr as Record<string, unknown> | undefined)?.url_list as string[] | undefined;
+  const dlUrls = (vid?.download_addr as Record<string, unknown> | undefined)?.url_list as string[] | undefined;
+  const rawCoverUrls = (vid?.cover as Record<string, unknown> | undefined)?.url_list as string[] | undefined;
+  // TikTok CDN serves heic first — sort jpeg/png to the front for browser compatibility
+  const coverUrls = rawCoverUrls?.slice().sort((a, b) => {
+    const rank = (u: string) => u.includes(".jpeg") || u.includes(".jpg") ? 0 : u.includes(".png") || u.includes(".webp") ? 1 : 2;
+    return rank(a) - rank(b);
+  });
+  const musicPlay = (music?.play_url as Record<string, unknown> | undefined)?.url_list as string[] | undefined;
+
+  const imagePost = v.image_post_info as Record<string, unknown> | undefined;
+  const images = imagePost
+    ? ((imagePost.images as Array<Record<string, unknown>>)?.map(
+        (img) => ((img.display_image as Record<string, unknown>)?.url_list as string[])?.[0]
+      ) ?? [])
+    : undefined;
+
+  return {
+    id: String(v.aweme_id ?? v.id ?? ""),
+    authorUsername: String(author?.unique_id ?? username),
+    caption: String(v.desc ?? ""),
+    coverUrl: coverUrls?.[0] ?? "",
+    videoUrl: dlUrls?.[0] ?? playUrls?.[0] ?? "",
+    videoUrlWm: playUrls?.[0] ?? "",
+    videoUrlHd: undefined,
+    duration: Number(vid?.duration ?? 0),
+    views: Number(stats?.play_count ?? 0),
+    likes: Number(stats?.digg_count ?? 0),
+    comments: Number(stats?.comment_count ?? 0),
+    shares: Number(stats?.share_count ?? 0),
+    createdAt: Number(v.create_time ?? 0),
+    hashtags: [],
+    music: music
+      ? {
+          id: String(music.id ?? ""),
+          title: String(music.title ?? ""),
+          author: String(music.author ?? ""),
+          audioUrl: musicPlay?.[0] ?? String(music.play_url ?? ""),
+        }
+      : undefined,
+    images,
+  };
+}
+
 export const tiktokMobileProvider: TikTokProvider = {
   name: "tiktok-mobile",
 
@@ -71,6 +136,8 @@ export const tiktokMobileProvider: TikTokProvider = {
       (avatarLarger?.url_list as string[] | undefined)?.[0] ??
       (avatarMedium?.url_list as string[] | undefined)?.[0] ??
       "";
+    // Cache uid so getUserPosts can reuse it without a second network call
+    await cacheSet("uid", String(user.uid), `mob:${username}`);
     return {
       uid: String(user.uid),
       username: String(user.unique_id ?? username),
@@ -86,8 +153,25 @@ export const tiktokMobileProvider: TikTokProvider = {
     };
   },
 
-  async getUserPosts(_username, _cursor): Promise<PostPage> {
-    throw new Error("tiktok-mobile: getUserPosts not implemented");
+  async getUserPosts(username, cursor = "0"): Promise<PostPage> {
+    const uid = await resolveUid(username);
+    const json = await mobileFetch("/aweme/v1/aweme/post/", {
+      user_id: uid,
+      count: "30",
+      max_cursor: cursor,
+      region: "US",
+    });
+    const items = (json.aweme_list ?? []) as Record<string, unknown>[];
+    if (items.length === 0 && !json.has_more) {
+      throw new Error("TikTok mobile API: empty post list (likely blocked or private)");
+    }
+    const hasMore = Boolean(json.has_more ?? false);
+    const nextCursor = String(json.max_cursor ?? "0");
+    return {
+      posts: items.map((v) => itemToPost(v, username)),
+      cursor: hasMore ? nextCursor : null,
+      hasMore,
+    };
   },
 
   async getVideo(_urlOrId): Promise<VideoDetail> {

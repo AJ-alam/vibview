@@ -98,9 +98,9 @@ export const scrapeProvider: TikTokProvider = {
   },
 
   async getUserPosts(_username, _cursor): Promise<PostPage> {
-    // The scrape provider only supplies the first page from the HTML.
-    // Full post pagination requires signed API calls — skip here.
-    return { posts: [], cursor: null, hasMore: false };
+    // Returning empty here causes the chain to treat this as "success with no posts",
+    // hiding the fact that all real providers failed. Throw so the chain reports failure.
+    throw new Error("scrape: getUserPosts not implemented — use API providers");
   },
 
   async getVideo(_urlOrId): Promise<VideoDetail> {
