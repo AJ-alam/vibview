@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
 import { tiktok } from "@/lib/providers/chain";
+import type { PostPage } from "@/lib/providers/types";
 import { ProfileHeader } from "@/components/profile/ProfileHeader";
 import { AnalyticsPanel } from "@/components/profile/AnalyticsPanel";
 import { GrowthChart } from "@/components/profile/GrowthChart";
@@ -31,11 +31,9 @@ export default async function ProfilePage(
 ) {
   const { username } = await props.params;
 
-  let user, initialPage;
+  let user;
   try {
-    // Sequential — avoids hitting tikwm's 1 req/sec rate limit simultaneously
     user = await tiktok.getUser(username);
-    initialPage = await tiktok.getUserPosts(username, "0");
   } catch (err) {
     void err;
     return (
@@ -55,12 +53,20 @@ export default async function ProfilePage(
     );
   }
 
+  let initialPage: PostPage = { posts: [], cursor: null, hasMore: false };
+  let postsUnavailable = false;
+  try {
+    initialPage = await tiktok.getUserPosts(username, "0");
+  } catch {
+    postsUnavailable = true;
+  }
+
   return (
     <div className="container mx-auto max-w-5xl px-4 py-8 space-y-8">
       <ProfileHeader user={user} />
       <AnalyticsPanel posts={initialPage.posts} user={user} />
       <GrowthChart username={username} />
-      <ProfileTabs username={username} initialPage={initialPage} user={user} />
+      <ProfileTabs username={username} initialPage={initialPage} user={user} postsUnavailable={postsUnavailable} />
     </div>
   );
 }

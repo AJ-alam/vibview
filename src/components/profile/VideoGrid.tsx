@@ -110,17 +110,46 @@ function VideoTile({ post }: { post: Post }) {
 export function VideoGrid({
   username,
   initialPage,
+  postsUnavailable = false,
 }: {
   username: string;
   initialPage: PostPage;
+  postsUnavailable?: boolean;
 }) {
   const [posts, setPosts] = useState<Post[]>(initialPage.posts);
   const [cursor, setCursor] = useState<string | null>(initialPage.cursor);
   const [hasMore, setHasMore] = useState(initialPage.hasMore);
   const [loading, setLoading] = useState(false);
+  const [unavailable, setUnavailable] = useState(postsUnavailable && initialPage.posts.length === 0);
   const [rateLimited, setRateLimited] = useState(false);
   const retryAfterRef = useRef<number>(0);
   const sentinelRef = useRef<HTMLDivElement>(null);
+
+  const retryLoad = useCallback(async () => {
+    if (loading) return;
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/user/${encodeURIComponent(username)}/posts`);
+      if (res.status === 429) {
+        const retryAfter = Number(res.headers.get("Retry-After") ?? 60);
+        retryAfterRef.current = Date.now() + retryAfter * 1000;
+        setRateLimited(true);
+        return;
+      }
+      if (!res.ok) return;
+      const page: PostPage = await res.json();
+      if (page.posts.length > 0) {
+        setPosts(page.posts);
+        setCursor(page.cursor);
+        setHasMore(page.hasMore);
+        setUnavailable(false);
+      }
+    } catch {
+      // silent — user can try again
+    } finally {
+      setLoading(false);
+    }
+  }, [loading, username]);
 
   const loadMore = useCallback(async () => {
     if (loading || !hasMore || !cursor) return;
@@ -164,7 +193,21 @@ export function VideoGrid({
     <div className="space-y-4">
       <h2 className="text-lg font-semibold">Videos</h2>
 
-      {!loading && posts.length === 0 && (
+      {!loading && posts.length === 0 && unavailable && (
+        <div className="text-center py-10 space-y-3">
+          <p className="text-sm text-muted-foreground">
+            Videos are temporarily unavailable — TikTok is rate-limiting our requests right now.
+          </p>
+          <button
+            onClick={() => void retryLoad()}
+            className="text-sm underline underline-offset-4 hover:text-foreground transition-colors"
+          >
+            Try loading videos
+          </button>
+        </div>
+      )}
+
+      {!loading && posts.length === 0 && !unavailable && (
         <p className="text-sm text-muted-foreground py-8 text-center">
           No videos found — this account may be private or has no public videos.
         </p>

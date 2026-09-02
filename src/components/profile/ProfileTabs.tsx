@@ -423,10 +423,12 @@ export function ProfileTabs({
   username,
   initialPage,
   user,
+  postsUnavailable = false,
 }: {
   username: string;
   initialPage: PostPage;
   user: UserProfile;
+  postsUnavailable?: boolean;
 }) {
   return (
     <Tabs defaultValue="videos" className="w-full">
@@ -440,7 +442,7 @@ export function ProfileTabs({
       </TabsList>
 
       <TabsContent value="videos" className="mt-4">
-        <VideoGrid username={username} initialPage={initialPage} />
+        <VideoGrid username={username} initialPage={initialPage} postsUnavailable={postsUnavailable} />
       </TabsContent>
       <TabsContent value="stories" className="mt-4">
         <StoriesTab username={username} />
