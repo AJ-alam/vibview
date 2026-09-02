@@ -37,16 +37,13 @@ export default async function ProfilePage(
     user = await tiktok.getUser(username);
     initialPage = await tiktok.getUserPosts(username, "0");
   } catch (err) {
-    const msg = String(err);
-    const isNotFound = msg.includes("404") || msg.includes("user not found") || msg.includes("user error");
+    void err;
     return (
       <div className="container mx-auto max-w-xl px-4 py-24 text-center space-y-4">
         <p className="text-4xl">😕</p>
         <h1 className="text-xl font-semibold">Could not load @{username}</h1>
         <p className="text-muted-foreground text-sm">
-          {isNotFound
-            ? "This account doesn’t exist or has been removed."
-            : "All data sources are currently unavailable. Please try again in a moment."}
+          TikTok&apos;s data is temporarily unavailable. Please try again in a few seconds.
         </p>
         <a
           href={`/@${username}`}

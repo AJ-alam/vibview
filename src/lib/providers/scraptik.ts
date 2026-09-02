@@ -93,7 +93,10 @@ export const scraptikProvider: TikTokProvider = {
   name: "scraptik",
 
   async getUser(username): Promise<UserProfile> {
-    const json = await apiFetch(`/get-user?unique_id=${encodeURIComponent(username)}`);
+    // Resolve username → numeric user_id first (same flow as getUserPosts).
+    // The /get-user endpoint uses user_id, not unique_id/username directly.
+    const userId = await resolveUserId(username);
+    const json = await apiFetch(`/get-user?user_id=${userId}`);
     const user = (json.user ?? json.data) as Record<string, unknown> | undefined;
     if (!user || !user.uid) throw new Error(`Scraptik: no user data for ${username}`);
     const avatarLarger = user.avatar_larger as Record<string, unknown> | undefined;

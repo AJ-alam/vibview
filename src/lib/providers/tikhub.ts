@@ -24,8 +24,6 @@ async function tikhubFetch(path: string): Promise<Record<string, unknown>> {
     }
     const json = await res.json() as Record<string, unknown>;
     // TikHub wraps API errors inside HTTP 200 with a non-200 code field.
-    // Without this check, getUser silently returns an empty profile instead of
-    // throwing and letting the chain try the next provider.
     const code = Number(json.code ?? 200);
     if (code !== 200 && code !== 0) {
       throw new Error(`TikHub API error ${code}: ${String(json.message ?? json.msg ?? "unknown")}`);
@@ -34,6 +32,33 @@ async function tikhubFetch(path: string): Promise<Record<string, unknown>> {
   } finally {
     clearTimeout(timer);
   }
+}
+
+function parseUserResponse(json: Record<string, unknown>, username: string): UserProfile {
+  const data = json.data as Record<string, unknown> | null | undefined;
+  if (!data) throw new Error(`TikHub: no data in response for user ${username}`);
+
+  const userInfo = data.userInfo as Record<string, unknown> | undefined;
+  const user = (data.user ?? userInfo?.["user"]) as Record<string, unknown> | undefined;
+  if (!user) throw new Error(`TikHub: no user object in response for ${username}`);
+
+  const stats = (data.stats ?? userInfo?.["stats"] ?? {}) as Record<string, unknown>;
+  const uid = String(user.id ?? user.uid ?? "");
+  if (!uid) throw new Error(`TikHub: user object has no uid for ${username}`);
+
+  return {
+    uid,
+    username: String(user.uniqueId ?? username),
+    displayName: String(user.nickname ?? username),
+    avatarUrl: String(user.avatarLarger ?? user.avatarMedium ?? ""),
+    bio: String(user.signature ?? ""),
+    verified: Boolean(user.verified ?? false),
+    region: String(user.region ?? ""),
+    followers: Number(stats.followerCount ?? 0),
+    following: Number(stats.followingCount ?? 0),
+    likes: Number(stats.heartCount ?? stats.diggCount ?? 0),
+    videoCount: Number(stats.videoCount ?? 0),
+  };
 }
 
 function itemToPost(v: Record<string, unknown>): Post {
@@ -80,33 +105,33 @@ export const tikhubProvider: TikTokProvider = {
   name: "tikhub",
 
   async getUser(username): Promise<UserProfile> {
-    const json = await tikhubFetch(
-      `/api/v1/tiktok/app/v3/fetch_user_profile_by_unique_id?uniqueId=${encodeURIComponent(username)}`
-    );
-    const data = json.data as Record<string, unknown> | null | undefined;
-    if (!data) throw new Error(`TikHub: no data in response for user ${username}`);
+    // TikHub renames endpoints as TikTok's internal API evolves.
+    // Try each path in order; skip 404s so the next candidate runs.
+    const endpoints = [
+      `/api/v1/tiktok/app/v3/fetch_user_profile_by_unique_id?uniqueId=${encodeURIComponent(username)}`,
+      `/api/v1/tiktok/web/fetch_user_profile?uniqueId=${encodeURIComponent(username)}`,
+      `/api/v1/tiktok/app/v3/fetch_user_info?uniqueId=${encodeURIComponent(username)}`,
+      `/api/v1/tiktok/app/v2/fetch_user_profile_by_unique_id?uniqueId=${encodeURIComponent(username)}`,
+    ];
 
-    const userInfo = data.userInfo as Record<string, unknown> | undefined;
-    const user = (data.user ?? userInfo?.["user"]) as Record<string, unknown> | undefined;
-    if (!user) throw new Error(`TikHub: no user object in response for ${username}`);
-
-    const stats = (data.stats ?? userInfo?.["stats"] ?? {}) as Record<string, unknown>;
-    const uid = String(user.id ?? user.uid ?? "");
-    if (!uid) throw new Error(`TikHub: user object has no uid for ${username}`);
-
-    return {
-      uid,
-      username: String(user.uniqueId ?? username),
-      displayName: String(user.nickname ?? username),
-      avatarUrl: String(user.avatarLarger ?? user.avatarMedium ?? ""),
-      bio: String(user.signature ?? ""),
-      verified: Boolean(user.verified ?? false),
-      region: String(user.region ?? ""),
-      followers: Number(stats.followerCount ?? 0),
-      following: Number(stats.followingCount ?? 0),
-      likes: Number(stats.heartCount ?? stats.diggCount ?? 0),
-      videoCount: Number(stats.videoCount ?? 0),
-    };
+    let lastErr: Error = new Error("no endpoints tried");
+    for (const ep of endpoints) {
+      try {
+        const json = await tikhubFetch(ep);
+        return parseUserResponse(json, username);
+      } catch (err) {
+        const msg = String(err);
+        // 404 means this specific endpoint path no longer exists — try next one.
+        // Any other error (401, 429, 500, timeout) means the endpoint exists but
+        // something else failed — propagate immediately so the chain can log it.
+        if (msg.includes("HTTP 404")) {
+          lastErr = err as Error;
+          continue;
+        }
+        throw err;
+      }
+    }
+    throw lastErr;
   },
 
   async getUserPosts(username, cursor = "0"): Promise<PostPage> {

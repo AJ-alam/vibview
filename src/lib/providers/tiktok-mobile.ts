@@ -1,9 +1,12 @@
 import type { TikTokProvider, UserProfile, PostPage, VideoDetail, Story, LiveRoom } from "./types";
 
 // TikTok's internal mobile API — no API key required.
-// Works from datacenter IPs because the mobile API endpoint doesn't share
-// the same Cloudflare bot-challenge path as the tiktok.com web domain.
-const BASE = "https://api16-normal-c-useast1a.tiktokv.com";
+// Multiple domains tried in order; Vercel datacenter IPs are blocked by some but not all.
+const DOMAINS = [
+  "https://api16-normal-c-useast1a.tiktokv.com",
+  "https://api22-normal-c-useast1a.tiktokv.com",
+  "https://api19-normal-c-useast1a.tiktokv.com",
+];
 const UA = "com.zhiliaoapp.musically/2023600030 (Linux; U; Android 10; en_US; Pixel 4; Build/QQ3A.200805.001; Cronet/58.0.2991.0)";
 const COMMON: Record<string, string> = {
   aid: "1233",
@@ -20,24 +23,37 @@ const COMMON: Record<string, string> = {
   language: "en",
 };
 
-function qs(extra: Record<string, string>): string {
-  return new URLSearchParams({ ...COMMON, ...extra }).toString();
-}
-
 async function mobileFetch(path: string, params: Record<string, string>): Promise<Record<string, unknown>> {
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), 12_000);
-  try {
-    const res = await fetch(`${BASE}${path}?${qs(params)}`, {
-      headers: { "User-Agent": UA, Accept: "application/json" },
-      cache: "no-store",
-      signal: controller.signal,
-    });
-    if (!res.ok) throw new Error(`TikTok mobile HTTP ${res.status}`);
-    return res.json() as Promise<Record<string, unknown>>;
-  } finally {
-    clearTimeout(timer);
+  const qs = new URLSearchParams({ ...COMMON, ...params }).toString();
+  const errors: string[] = [];
+
+  for (const base of DOMAINS) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 8_000);
+    try {
+      const res = await fetch(`${base}${path}?${qs}`, {
+        headers: { "User-Agent": UA, Accept: "application/json" },
+        cache: "no-store",
+        signal: controller.signal,
+      });
+      if (!res.ok) {
+        errors.push(`${base}: HTTP ${res.status}`);
+        continue;
+      }
+      const text = await res.text();
+      if (!text) {
+        errors.push(`${base}: empty body`);
+        continue;
+      }
+      return JSON.parse(text) as Record<string, unknown>;
+    } catch (err) {
+      errors.push(`${base}: ${String(err)}`);
+    } finally {
+      clearTimeout(timer);
+    }
   }
+
+  throw new Error(`TikTok mobile API: all domains failed — ${errors.join("; ")}`);
 }
 
 export const tiktokMobileProvider: TikTokProvider = {
