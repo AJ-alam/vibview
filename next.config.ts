@@ -5,6 +5,7 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       { protocol: "https", hostname: "**.tiktokcdn.com" },
       { protocol: "https", hostname: "**.tiktokcdn-us.com" },
+      { protocol: "https", hostname: "**.tiktokcdn-eu.com" },
       { protocol: "https", hostname: "**.tiktokv.com" },
       { protocol: "https", hostname: "tikwm.com" },
       { protocol: "https", hostname: "**.tikwm.com" },

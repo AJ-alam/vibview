@@ -19,7 +19,7 @@ function getRedis() {
 
 const TTL = {
   user: 24 * 60 * 60,        // 24 hours
-  posts: 24 * 60 * 60,       // 24 hours (was 6h — longer TTL reduces API quota burn)
+  posts: 2 * 60 * 60,        // 2 hours — TikTok signed CDN URLs expire, keep cache short
   video: 24 * 60 * 60,       // 24 hours
   uid: 7 * 24 * 60 * 60,     // 7 days — numeric user IDs are stable
 } as const;

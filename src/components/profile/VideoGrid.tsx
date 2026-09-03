@@ -24,8 +24,15 @@ function fmtDuration(s: number) {
   return `${m}:${sec.toString().padStart(2, "0")}`;
 }
 
-function dl(rawUrl: string, download = true) {
-  return `/api/dl?url=${encodeURIComponent(rawUrl)}&dl=${download ? 1 : 0}`;
+function dlUrl(rawUrl: string, videoId: string, quality: string) {
+  return `/api/dl?url=${encodeURIComponent(rawUrl)}&dl=1&id=${encodeURIComponent(videoId)}&q=${quality}`;
+}
+
+function triggerDownload(url: string, filename: string) {
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.click();
 }
 
 function VideoTile({ post }: { post: Post }) {
@@ -60,7 +67,8 @@ function VideoTile({ post }: { post: Post }) {
         {fmt(post.views)}
       </div>
 
-      <div className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+      {/* always visible on touch, hover-only on pointer devices */}
+      <div className="absolute bottom-2 right-2 opacity-100 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100 transition-opacity">
         <DropdownMenu>
           <DropdownMenuTrigger
             className={cn(buttonVariants({ size: "icon-sm", variant: "secondary" }), "rounded-full shadow-lg")}
@@ -69,27 +77,27 @@ function VideoTile({ post }: { post: Post }) {
           </DropdownMenuTrigger>
           <DropdownMenuContent side="top" align="end">
             {post.videoUrlHd && (
-              <DropdownMenuItem onClick={() => window.open(dl(post.videoUrlHd!), "_blank")}>
+              <DropdownMenuItem onClick={() => triggerDownload(dlUrl(post.videoUrlHd!, post.id, "hd"), "video.mp4")}>
                 HD (no watermark)
               </DropdownMenuItem>
             )}
             {post.videoUrl && (
-              <DropdownMenuItem onClick={() => window.open(dl(post.videoUrl), "_blank")}>
+              <DropdownMenuItem onClick={() => triggerDownload(dlUrl(post.videoUrl, post.id, "sd"), "video.mp4")}>
                 No watermark
               </DropdownMenuItem>
             )}
             {post.videoUrlWm && (
-              <DropdownMenuItem onClick={() => window.open(dl(post.videoUrlWm), "_blank")}>
+              <DropdownMenuItem onClick={() => triggerDownload(dlUrl(post.videoUrlWm, post.id, "wm"), "video.mp4")}>
                 Watermarked
               </DropdownMenuItem>
             )}
             {post.coverUrl && (
-              <DropdownMenuItem onClick={() => window.open(dl(post.coverUrl), "_blank")}>
+              <DropdownMenuItem onClick={() => triggerDownload(dlUrl(post.coverUrl, post.id, "cover"), "cover.jpg")}>
                 Cover image
               </DropdownMenuItem>
             )}
             {post.music?.audioUrl && (
-              <DropdownMenuItem onClick={() => window.open(dl(post.music!.audioUrl), "_blank")}>
+              <DropdownMenuItem onClick={() => triggerDownload(dlUrl(post.music!.audioUrl, post.id, "audio"), "audio.mp3")}>
                 Audio (MP3)
               </DropdownMenuItem>
             )}

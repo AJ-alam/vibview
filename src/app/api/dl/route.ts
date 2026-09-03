@@ -4,6 +4,7 @@ import { tiktok } from "@/lib/providers/chain";
 const ALLOWED_DOMAINS = [
   "tiktokcdn.com",
   "tiktokcdn-us.com",
+  "tiktokcdn-eu.com",
   "tiktokv.com",
   "tiktok.com",
   "muscdn.com",
@@ -40,7 +41,7 @@ function buildResponse(upstream: Response, dl: boolean): NextResponse {
   return new NextResponse(upstream.body, { status: upstream.status, headers });
 }
 
-async function fetchAllowed(url: string): Promise<Response | null> {
+async function fetchAllowed(url: string, rangeHeader?: string | null): Promise<Response | null> {
   let parsed: URL;
   try {
     parsed = new URL(url);
@@ -48,7 +49,9 @@ async function fetchAllowed(url: string): Promise<Response | null> {
     return null;
   }
   if (!isAllowed(parsed.hostname)) return null;
-  return fetch(url, { headers: UPSTREAM_HEADERS });
+  const headers: Record<string, string> = { ...UPSTREAM_HEADERS };
+  if (rangeHeader) headers["Range"] = rangeHeader;
+  return fetch(url, { headers });
 }
 
 function pickFreshUrl(
@@ -83,7 +86,11 @@ export async function GET(request: NextRequest) {
     return new NextResponse("Domain not allowed", { status: 403 });
   }
 
-  const upstream = await fetch(url, { headers: UPSTREAM_HEADERS });
+  const rangeHeader = request.headers.get("range");
+  const fetchHeaders: Record<string, string> = { ...UPSTREAM_HEADERS };
+  if (rangeHeader) fetchHeaders["Range"] = rangeHeader;
+
+  const upstream = await fetch(url, { headers: fetchHeaders });
 
   if (!upstream.ok) {
     // CDN URL expired — if we know the video ID, fetch a fresh URL and retry once.
@@ -92,7 +99,7 @@ export async function GET(request: NextRequest) {
         const fresh = await tiktok.getVideoFresh(id);
         const freshUrl = pickFreshUrl(fresh, quality);
         if (freshUrl) {
-          const retry = await fetchAllowed(freshUrl);
+          const retry = await fetchAllowed(freshUrl, rangeHeader);
           if (retry?.ok) return buildResponse(retry, dl);
         }
       } catch {

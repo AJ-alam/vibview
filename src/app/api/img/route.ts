@@ -3,10 +3,12 @@ import { NextRequest, NextResponse } from "next/server";
 const ALLOWED_DOMAINS = [
   "tiktokcdn.com",
   "tiktokcdn-us.com",
+  "tiktokcdn-eu.com",
   "tiktokv.com",
   "muscdn.com",
   "byteoversea.com",
   "tikwm.com",
+  "byteimg.com",
 ];
 
 const CACHE_HEADERS = {

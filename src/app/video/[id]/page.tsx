@@ -61,7 +61,7 @@ export default async function VideoPage(props: PageProps<"/video/[id]">) {
         {isPhoto ? (
           <PhotoCarousel images={video.images!} caption={video.caption} />
         ) : (
-          <VideoPlayer src={videoSrc} poster={video.coverUrl} />
+          <VideoPlayer src={videoSrc} poster={video.coverUrl ? `/api/img?url=${encodeURIComponent(video.coverUrl)}` : undefined} />
         )}
 
         {/* Metadata */}

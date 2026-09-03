@@ -26,11 +26,11 @@ const getUserProviders: TikTokProvider[] = [
   scrapeProvider,
 ];
 const getPostsProviders: TikTokProvider[] = [
+  tikwmProvider,       // serves stable non-expiring cover URLs from tikwm CDN
   scraptikProvider,
   scraper7Provider,
   tikhubProvider,
   tiktokMobileProvider,
-  tikwmProvider,
   scrapeProvider,
 ];
 const getVideoProviders: TikTokProvider[] = [
